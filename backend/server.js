@@ -12,3 +12,18 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
+bot.command("start", (ctx) => {
+  ctx.reply("欢迎进入 WebApp ↓", {
+    reply_markup: {
+      keyboard: [
+        [
+          { 
+            text: "打开 WebApp",
+            web_app: { url: "https://telegram-webapp-fafafa.onrender.com" }
+          }
+        ]
+      ],
+      resize_keyboard: true
+    }
+  });
+});
