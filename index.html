@@ -85,7 +85,7 @@ setInterval(()=>{ activeBanner = (activeBanner+1)%BANNERS.length; renderBanner()
 /* ========== 渲染游戏卡片（带缺图回退 & 分类支持） ========== */
 function renderGames(filterCat){
   gamesEl.innerHTML = "";
-  const list = GAMES.filter(g => !filterCat  g.tag.includes(filterCat)  filterCat === 'all');
+  const list = GAMES.filter(g => !filterCat || g.tag.includes(filterCat) || filterCat === 'all');
   list.forEach(g=>{
     const card = document.createElement("div");
     card.className = "game";
@@ -107,8 +107,7 @@ function renderGames(filterCat){
     btn.onclick = (e)=>{ e.stopPropagation(); openGame(g); };
     card.appendChild(btn);
 
-    card.
-       onclick = ()=> openGame(g);
+    card.onclick = ()=> openGame(g);
 
     gamesEl.appendChild(card);
   });
@@ -142,7 +141,7 @@ async function fetchBalance(){
     const res = await fetch((API_BASE || "") + "/api/balance", {method:"GET", credentials:"include"});
     if(!res.ok) throw new Error("balance non-200");
     const data = await res.json();
-    localBalance = parseFloat(data.balance  0)  0;
+    localBalance = parseFloat(data.balance || 0) || 0;
     updateBalanceUI();
   }catch(err){
     console.error("fetchBalance err", err);
@@ -220,7 +219,7 @@ withdrawBtn.onclick = ()=>{
   showModal("提现", html);
   document.getElementById("do-withdraw").onclick = async ()=>{
     const amt = parseFloat(document.getElementById("withdraw-amt").value);
-     if(!amt || amt<=0){ alert("请输入正确金额"); return; }
+    if(!amt || amt<=0){ alert("请输入正确金额"); return; }
     if(amt > (localBalance + Object.values(pendingOperations).reduce((s,o)=> o.type==='recharge'? s+o.amount : s-o.amount, 0))){
       alert("余额不足");
       return;
@@ -264,7 +263,7 @@ openSettingsBtn.onclick = async ()=>{
     const res = await fetch((API_BASE || "") + "/api/verifyInitData", { method:"POST", credentials:"include" });
     const j = await res.json().catch(()=>({}));
     if(!res.ok){
-      modalBody.innerHTML = <div style="font-size:13px;color:#ff7b7b">initData 验证失败：${j.message || res.status}</div>;
+      modalBody.innerHTML = `<div style="font-size:13px;color:#ff7b7b">initData 验证失败：${j.message || res.status}</div>`;
       return;
     }
     modalBody.innerHTML = `<div style="font-size:13px;color:#7be495">initData 校验通过</div>
@@ -272,7 +271,7 @@ openSettingsBtn.onclick = async ()=>{
       <div style="text-align:right;margin-top:8px"><button id="close-ok" class="btn btn-ghost">关闭</button></div>`;
     document.getElementById("close-ok").onclick = hideModal;
   }catch(e){
-    modalBody.innerHTML = <div style="font-size:13px;color:#ff7b7b">检测失败</div>;
+    modalBody.innerHTML = `<div style="font-size:13px;color:#ff7b7b">检测失败</div>`;
     console.error(e);
   }
 };
@@ -312,4 +311,3 @@ navWallet && navWallet.addEventListener("click", ()=> {
   showModal("钱包明细", `<div style="font-size:13px;color:var(--muted)">余额：${balanceEl.textContent}<br/>（示例）</div>`);
 });
 </script>
-     
