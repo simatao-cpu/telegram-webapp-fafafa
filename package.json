@@ -1,0 +1,9 @@
+{
+  "name": "telegram-webapp-fafafa",
+  "version": "1.0.0",
+  "main": "index.html",
+  "type": "module",
+  "dependencies": {
+    "crypto": "^1.0.1"
+  }
+}
