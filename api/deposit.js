@@ -1,8 +1,19 @@
 export default async function handler(req, res) {
-  const balance = 999.99; // 示例余额，可查数据库
+  if (req.method !== "POST") {
+    return res.status(405).json({ ok: false, message: "Only POST supported" });
+  }
+
+  const { amount } = req.body;
+
+  if (!amount || amount <= 0) {
+    return res.status(400).json({ ok: false, message: "Invalid amount" });
+  }
+
+  const orderId = "re_" + Math.random().toString(36).slice(2);
 
   return res.status(200).json({
     ok: true,
-    balance
+    orderId,
+    message: "充值订单创建成功（示例）"
   });
 }
