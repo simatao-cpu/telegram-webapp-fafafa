@@ -1,4 +1,3 @@
-阿涛, [2025/11/28 18:46]
 <script>
 /* ========================
    配置（如需改域名请设置 API_BASE）
@@ -109,9 +108,7 @@ function renderGames(filterCat){
     card.appendChild(btn);
 
     card.
-
-阿涛, [2025/11/28 18:46]
-onclick = ()=> openGame(g);
+       onclick = ()=> openGame(g);
 
     gamesEl.appendChild(card);
   });
@@ -223,9 +220,7 @@ withdrawBtn.onclick = ()=>{
   showModal("提现", html);
   document.getElementById("do-withdraw").onclick = async ()=>{
     const amt = parseFloat(document.getElementById("withdraw-amt").value);
-
-阿涛, [2025/11/28 18:46]
-if(!amt || amt<=0){ alert("请输入正确金额"); return; }
+     if(!amt || amt<=0){ alert("请输入正确金额"); return; }
     if(amt > (localBalance + Object.values(pendingOperations).reduce((s,o)=> o.type==='recharge'? s+o.amount : s-o.amount, 0))){
       alert("余额不足");
       return;
@@ -317,3 +312,4 @@ navWallet && navWallet.addEventListener("click", ()=> {
   showModal("钱包明细", `<div style="font-size:13px;color:var(--muted)">余额：${balanceEl.textContent}<br/>（示例）</div>`);
 });
 </script>
+     
