@@ -1,166 +1,21 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>发发发娱乐 - 游戏大厅</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-:root{
-  --bg:#071019; --card:#0b1220; --accent:#d48806; --accent-dark:#b36f00; --muted:#9aa3ad;
-}
-html,body{margin:0;padding:0;background:var(--bg);color:#fff;font-family:Arial;}
-.wrap{max-width:780px;margin:auto;padding-bottom:90px;}
-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.06);}
-header .left{display:flex;align-items:center;gap:10px;}
-header img{width:44px;height:44px;border-radius:10px;border:2px solid rgba(255,215,0,0.25);}
-header .title{font-size:18px;color:var(--accent);font-weight:bold;}
-.header-right{display:flex;align-items:center;gap:10px}
-.icon-btn{background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer}
-
-/* wallet */
-.wallet{margin:14px 16px;padding:14px;border-radius:10px;background:linear-gradient(90deg,rgba(204,32,0,0.06),rgba(255,200,0,0.05));display:flex;align-items:center;justify-content:space-between;border:1px solid rgba(255,255,255,0.05);}
-.balance-left .label{font-size:12px;color:var(--muted)}
-.balance-left .amount{font-size:22px;color:var(--accent);font-weight:bold}
-.actions{display:flex;gap:8px}
-.btn{padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
-.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-dark));color:#120800;font-weight:700}
-.btn-ghost{background:rgba(255,255,255,0.06);color:#fff}
-
-/* banner */
-.banner{margin:10px 16px;height:160px;border-radius:12px;overflow:hidden;position:relative;}
-.banner img{width:100%;height:100%;object-fit:cover;transition:opacity .6s}
-.banner .text{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.45));padding:10px;font-size:16px;font-weight:bold}
-.dots{display:flex;gap:6px;justify-content:center;margin-top:8px}
-
-/* categories */
-.categories{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;padding:10px 16px;}
-.cat{background:rgba(255,255,255,0.05);border-radius:10px;text-align:center;padding:10px;font-size:12px;color:var(--muted);cursor:pointer}
-.cat span{font-size:22px;display:block;margin-bottom:6px}
-
-/* games */
-.section-title{display:flex;justify-content:space-between;margin:10px 16px}
-.section-title h3{margin:0;font-size:16px;color:var(--accent)}
-.games{padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.game{background:rgba(255,255,255,0.04);border-radius:12px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,0.04)}
-.game img{width:100%;height:110px;object-fit:cover}
-.game .info{padding:8px;font-size:14px;font-weight:700}
-.play{position:absolute;right:10px;bottom:10px;padding:6px 10px;border-radius:8px;background:var(--accent);color:#120800;font-weight:700;border:0}
-
-/* modal */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:50}
-.modal{width:92%;max-width:520px;background:linear-gradient(180deg,#08101a,#06101a);border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.03)}
-.modal-header{display:flex;justify-content:space-between;align-items:center}
-.close{background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer}
-.form-row{display:flex;gap:8px;margin-top:8px}
-.input{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:#fff}
-
-/* bottom nav */
-.nav{position:fixed;left:0;right:0;bottom:0;height:60px;background:rgba(0,0,0,0.25);display:flex;justify-content:space-around;align-items:center;border-top:1px solid rgba(255,255,255,0.06)}
-.nav button{background:transparent;border:0;color:var(--muted);font-size:13px}
-.nav .active{color:var(--accent);font-weight:700}
-
-/* small screens */
-@media(max-width:420px){
-  .banner{height:140px}
-  .game img{height:100px}
-}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <header>
-    <div class="left">
-      <img src="https://via.placeholder.com/44x44/ffcc00/8b0000?text=发" />
-      <div>
-        <div class="title">发发发娱乐</div>
-        <div class="sub">欢迎 · VIP</div>
-      </div>
-    </div>
-    <div class="header-right">
-      <div id="tg-status" style="font-size:12px;color:var(--muted)">Telegram: 未检测</div>
-      <button class="icon-btn" id="open-settings">⚙️</button>
-    </div>
-  </header>
-
-  <!-- wallet -->
-  <div class="wallet">
-    <div class="balance-left">
-      <div class="label">余额</div>
-      <div class="amount" id="balance">¥0.00</div>
-      <div style="font-size:12px;color:var(--muted)" id="balance-note">上次更新：-</div>
-    </div>
-    <div class="actions">
-      <button class="btn btn-primary" id="recharge-btn">充值</button>
-      <button class="btn btn-ghost" id="withdraw-btn">提现</button>
-    </div>
-  </div>
-
-  <!-- banner (自动轮播) -->
-  <div class="banner" id="banner">
-    <!-- 图片通过 JS 控制 -->
-  </div>
-  <div class="dots" id="banner-dots" style="margin:0 16px 8px 16px;display:flex;justify-content:center"></div>
-
-  <!-- categories -->
-  <div class="categories" id="categories">
-    <div class="cat" data-cat="hot"><span>🔥</span>热门</div>
-    <div class="cat" data-cat="slots"><span>🎰</span>老虎机</div>
-    <div class="cat" data-cat="mahjong"><span>🀄</span>麻将</div>
-    <div class="cat" data-cat="live"><span>🎥</span>真人</div>
-    <div class="cat" data-cat="lottery"><span>🎟️</span>彩票</div>
-    <div class="cat" data-cat="sports"><span>⚽</span>体育</div>
-  </div>
-
-  <div class="section-title">
-    <h3>热门推荐</h3>
-    <button id="more-games">更多</button>
-  </div>
-
-  <div class="games" id="games">
-    <!-- 游戏卡片由 JS 渲染 -->
-  </div>
-
-</div>
-
-<!-- modal: 通用（充值/提现/设置） -->
-<div class="modal-backdrop" id="modal-backdrop">
-  <div class="modal" id="modal">
-    <div class="modal-header">
-      <div id="modal-title">标题</div>
-      <button class="close" id="modal-close">✕</button>
-    </div>
-    <div id="modal-body" style="margin-top:10px"></div>
-  </div>
-</div>
-
-<!-- bottom nav -->
-<div class="nav">
-  <button class="active">首页</button>
-  <button>游戏</button>
-  <button>任务</button>
-  <button id="nav-wallet">钱包</button>
-  <button>我的</button>
-</div>
-
+阿涛, [2025/11/28 18:46]
 <script>
 /* ========================
-   配置（替换成你的后端地址）
+   配置（如需改域名请设置 API_BASE）
    ======================== */
-const API_BASE = ""; // 例如 "https://api.yoursite.com"；为空表示同域（相对路径 /api/...）
+const API_BASE = ""; // 同域为空，或 "https://api.yourdomain.com"
 
-/* ========== Banner 数据 ========== */
+/* ========== 数据 ========== */
 const BANNERS = [
-  {img:"https://via.placeholder.com/720x320/cc0000/fff?text=首充+翻倍", text:"首充翻倍 · 日常返水"},
+  {img:"/IMG_1683.png", text:"首充翻倍 · 日常返水"},
   {img:"https://via.placeholder.com/720x320/aa2200/fff?text=麻将胡了", text:"新游上线：《麻将胡了》"},
   {img:"https://via.placeholder.com/720x320/bb4400/fff?text=黄金时段", text:"黄金时段送大礼包"}
 ];
 
-/* ========== 游戏数据 ========== */
 const GAMES = [
-  {id:1,title:"Gates of Olympus", tag:"老虎机", img:"https://via.placeholder.com/360x200/880000/ffd700?text=Gates+of+Olympus", url:"/games/gates.html"},
-  {id:2,title:"麻将胡了 H5", tag:"棋牌", img:"https://via.placeholder.com/360x200/aa2200/fff?text=麻将胡了", url:"/games/mahjong/index.html"},
-  {id:3,title:"捕鱼达人", tag:"捕鱼", img:"https://via.placeholder.com/360x200/cc3300/fff?text=捕鱼达人", url:"/games/fish/index.html"}
+  {id:1,title:"Gates of Olympus", tag:"老虎机", img:"/assets/gates.jpg", url:"/games/gates.html"},
+  {id:2,title:"麻将胡了 H5", tag:"棋牌", img:"/assets/mahjong.jpg", url:"/games/mahjong/index.html"},
+  {id:3,title:"捕鱼达人", tag:"捕鱼", img:"/assets/fish.jpg", url:"/games/fish/index.html"}
 ];
 
 /* ========== DOM 元素 ========== */
@@ -176,18 +31,42 @@ const modalClose = document.getElementById("modal-close");
 const openSettingsBtn = document.getElementById("open-settings");
 const rechargeBtn = document.getElementById("recharge-btn");
 const withdrawBtn = document.getElementById("withdraw-btn");
+const navWallet = document.getElementById("nav-wallet");
 
-/* ========== Banner 轮播逻辑 ========== */
+/* ========== 状态 ========== */
 let activeBanner = 0;
+let localBalance = 0.00; // 本地平衡缓存
+let pendingOperations = {}; // { opId: {type, amount, revertBalance} }
+
+/* ========== 通用帮助函数 ========== */
+function safeImg(src, fallback){
+  const img = document.createElement('img');
+  img.src = src;
+  img.onerror = ()=>{ img.src = fallback; };
+  return img;
+}
+function showModal(title, html){
+  modalTitle.textContent = title;
+  modalBody.innerHTML = html;
+  modalBackdrop.style.display = "flex";
+}
+function hideModal(){ modalBackdrop.style.display = "none"; }
+modalClose.onclick = hideModal;
+modalBackdrop.onclick = (e)=>{ if(e.target===modalBackdrop) hideModal(); };
+
+/* ========== Banner 轮播 ========== */
 function renderBanner(){
   bannerEl.innerHTML = "";
-  const b = BANNERS[activeBanner];
+  const b = BANNERS[activeBanner] || BANNERS[0];
   const img = document.createElement("img");
   img.src = b.img;
+  img.alt = b.text || "";
+  img.onerror = ()=>{ img.src = "https://via.placeholder.com/720x320/333/fff?text=占位"; };
   bannerEl.appendChild(img);
+
   const txt = document.createElement("div");
   txt.className = "text";
-  txt.textContent = b.text;
+  txt.textContent = b.text || "";
   bannerEl.appendChild(txt);
 
   // dots
@@ -202,65 +81,93 @@ function renderBanner(){
   });
 }
 renderBanner();
-setInterval(()=>{ activeBanner = (activeBanner+1)%BANNERS.length; renderBanner(); }, 4500);
+setInterval(()=>{ activeBanner = (activeBanner+1)%BANNERS.length; renderBanner(); }, 4800);
 
-/* ========== 渲染游戏卡片 ========== */
-function renderGames(){
+/* ========== 渲染游戏卡片（带缺图回退 & 分类支持） ========== */
+function renderGames(filterCat){
   gamesEl.innerHTML = "";
-  GAMES.forEach(g=>{
+  const list = GAMES.filter(g => !filterCat  g.tag.includes(filterCat)  filterCat === 'all');
+  list.forEach(g=>{
     const card = document.createElement("div");
     card.className = "game";
-    card.innerHTML = `<img src="${g.img}" alt="${g.title}" /><div class="info">${g.title}</div><button class="play">进入</button>`;
-    card.querySelector(".play").onclick = ()=> openGame(g);
-    card.onclick = (e)=>{ if(e.target.tagName!=="BUTTON") openGame(g); };
+    // 图片（支持仓库内资源或远程）
+    const imgEl = document.createElement("img");
+    imgEl.src = g.img;
+    imgEl.alt = g.title;
+    imgEl.onerror = ()=>{ imgEl.src = "https://via.placeholder.com/360x200/222/fff?text=无图"; };
+    card.appendChild(imgEl);
+
+    const info = document.createElement("div");
+    info.className = "info";
+    info.textContent = g.title;
+    card.appendChild(info);
+
+    const btn = document.createElement("button");
+    btn.className = "play";
+    btn.textContent = "进入";
+    btn.onclick = (e)=>{ e.stopPropagation(); openGame(g); };
+    card.appendChild(btn);
+
+    card.
+
+阿涛, [2025/11/28 18:46]
+onclick = ()=> openGame(g);
+
     gamesEl.appendChild(card);
   });
 }
 renderGames();
 
-/* ========== 打开游戏逻辑 ==========
-   如果是内部 H5 游戏，直接 location.href；如需在 TG WebApp 内打开，使用 Telegram.WebApp.openInline 或 window.open
-================================== */
-function openGame(g){
-  // 这里示例：若是相对路径则直接跳转；生产可先请求后端确认 token，再跳转
-  const url = g.url;
-  // 优先在新窗口打开（部分平台可被 TG WebApp 拦截）
-  window.open(url, "_blank");
+/* ========== 打开游戏（先校验 initData 再打开） ========== */
+async function openGame(g){
+  try{
+    // 首先调用后端 verifyInitData（如果后端返回 ok 才打开）—— 安全校验
+    const res = await fetch((API_BASE || "") + "/api/verifyInitData", { method: "POST", credentials: "include" });
+    if(!res.ok){
+      const j = await res.json().catch(()=>({message:res.statusText}));
+      alert("校验失败：" + (j.message || "请在 BotFather 配置 Direct Link 与 BOT_TOKEN"));
+      return;
+    }
+    // 可选：记录点击埋点
+    navigator.sendBeacon && navigator.sendBeacon((API_BASE || "") + "/api/track", JSON.stringify({ action: "game_click", gameId: g.id }));
+
+    // 打开游戏：优先在新 tab 打开
+    window.open(g.url, "_blank");
+  }catch(err){
+    console.error("openGame error", err);
+    alert("打开游戏失败，请稍后重试");
+  }
 }
 
-/* ========== Modal 控制函数 ========== */
-function showModal(title, html){
-  modalTitle.textContent = title;
-  modalBody.innerHTML = html;
-  modalBackdrop.style.display = "flex";
-}
-function hideModal(){ modalBackdrop.style.display = "none"; }
-modalClose.onclick = hideModal;
-modalBackdrop.onclick = (e)=>{ if(e.target===modalBackdrop) hideModal(); };
-
-/* ========== 余额读取（调用后端接口） ========== */
+/* ========== 余额读取（后端接口） ========== */
 async function fetchBalance(){
   try{
     const res = await fetch((API_BASE || "") + "/api/balance", {method:"GET", credentials:"include"});
-    if(!res.ok) throw new Error("余额接口返回非200");
+    if(!res.ok) throw new Error("balance non-200");
     const data = await res.json();
-    balanceEl.textContent = "¥" + (parseFloat(data.balance||0)).toFixed(2);
-    const t = new Date().toLocaleTimeString();
-    balanceNoteEl.textContent = "上次更新：" + t;
+    localBalance = parseFloat(data.balance  0)  0;
+    updateBalanceUI();
   }catch(err){
     console.error("fetchBalance err", err);
     balanceEl.textContent = "¥0.00";
     balanceNoteEl.textContent = "更新失败";
   }
 }
-fetchBalance(); // 初次读取
+function updateBalanceUI(){
+  // 计算 pending 合计（展示为“待确认”）
+  const pendingSum = Object.values(pendingOperations).reduce((s,o)=> o.type==='recharge'? s+o.amount : s-o.amount, 0);
+  const display = localBalance + pendingSum;
+  balanceEl.textContent = "¥" + display.toFixed(2);
+  const now = new Date().toLocaleTimeString();
+  balanceNoteEl.textContent = "上次更新：" + now + (pendingSum!==0 ? " · 含待确认变动" : "");
+}
 
-/* ========== 充值弹窗（示例：请求后端生成充值订单） ========== */
+/* ========== 乐观充值（先 UI 更新，再确认） ========== */
 rechargeBtn.onclick = ()=> {
   const html = `
     <div>
       <div style="font-size:13px;color:var(--muted)">请输入充值金额</div>
-      <div class="form-row"><input id="recharge-amt" class="input" placeholder="例如 100" type="number"/></div>
+      <div class="form-row"><input id="recharge-amt" class="input" placeholder="例如 100" type="number" min="1"/></div>
       <div style="margin-top:10px;text-align:right"><button id="do-recharge" class="btn btn-primary">创建充值订单</button></div>
     </div>
   `;
@@ -268,54 +175,87 @@ rechargeBtn.onclick = ()=> {
   document.getElementById("do-recharge").onclick = async ()=>{
     const amt = parseFloat(document.getElementById("recharge-amt").value);
     if(!amt || amt<=0){ alert("请输入正确金额"); return; }
+
+    // 乐观更新：生成临时 op id 并记录 revert 值
+    const opId = "op-" + Math.random().toString(36).slice(2,9);
+    pendingOperations[opId] = { type:"recharge", amount: amt, createdAt: Date.now() };
+    updateBalanceUI();
+    hideModal();
+
     try{
       const res = await fetch((API_BASE || "") + "/api/recharge", {
         method:"POST", headers:{"Content-Type":"application/json"}, credentials:"include",
-        body: JSON.stringify({amount: amt})
+        body: JSON.stringify({ amount: amt })
       });
-      const j = await res.json();
-      if(res.ok){
-        alert("充值订单创建成功，订单号：" + j.orderId);
-        hideModal();
-        fetchBalance();
-      }else{
+      const j = await res.json().catch(()=>({}));
+      if(!res.ok){
+        // 回滚
+        delete pendingOperations[opId];
+        updateBalanceUI();
         alert("充值失败：" + (j.message || res.status));
+        return;
       }
+      // 后端返回成功：把 pending 转正式（我们这里把本地余额累加并移除 pending）
+      localBalance += amt;
+      delete pendingOperations[opId];
+      updateBalanceUI();
+      alert("充值订单已创建，订单号：" + (j.orderId || "未返回"));
     }catch(e){
+      // 回滚
+      delete pendingOperations[opId];
+      updateBalanceUI();
       alert("充值请求失败");
       console.error(e);
     }
   };
 };
 
-/* ========== 提现弹窗（示例） ========== */
+/* ========== 乐观提现（先 UI 扣减，再确认） ========== */
 withdrawBtn.onclick = ()=>{
   const html = `
     <div>
-      <div style="font-size:13px;color:var(--muted)">提现金额</div>
-      <div class="form-row"><input id="withdraw-amt" class="input" placeholder="例如 200" type="number"/></div>
-      <div style="font-size:12px;color:var(--muted);margin-top:6px">注意：提现会在后台审核，请确保账户信息完整。</div>
+      <div style="font-size:13px;color:var(--muted)">请输入提现金额</div>
+      <div class="form-row"><input id="withdraw-amt" class="input" placeholder="例如 200" type="number" min="1"/></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px">注意：提现需审核，余额会暂时扣除。</div>
       <div style="margin-top:10px;text-align:right"><button id="do-withdraw" class="btn btn-primary">申请提现</button></div>
     </div>
   `;
   showModal("提现", html);
   document.getElementById("do-withdraw").onclick = async ()=>{
     const amt = parseFloat(document.getElementById("withdraw-amt").value);
-    if(!amt || amt<=0){ alert("请输入正确金额"); return; }
+
+阿涛, [2025/11/28 18:46]
+if(!amt || amt<=0){ alert("请输入正确金额"); return; }
+    if(amt > (localBalance + Object.values(pendingOperations).reduce((s,o)=> o.type==='recharge'? s+o.amount : s-o.amount, 0))){
+      alert("余额不足");
+      return;
+    }
+
+    const opId = "op-" + Math.random().toString(36).slice(2,9);
+    pendingOperations[opId] = { type:"withdraw", amount: amt, createdAt: Date.now() };
+    updateBalanceUI();
+    hideModal();
+
     try{
       const res = await fetch((API_BASE || "") + "/api/withdraw", {
         method:"POST", headers:{"Content-Type":"application/json"}, credentials:"include",
-        body: JSON.stringify({amount: amt})
+        body: JSON.stringify({ amount: amt })
       });
-      const j = await res.json();
-      if(res.ok){
-        alert("提现申请已提交，流水号：" + j.withdrawId);
-        hideModal();
-        fetchBalance();
-      }else{
+      const j = await res.json().catch(()=>({}));
+      if(!res.ok){
+        delete pendingOperations[opId];
+        updateBalanceUI();
         alert("提现失败：" + (j.message || res.status));
+        return;
       }
+      // 成功：从本地余额扣除并移除 pending
+      localBalance -= amt;
+      delete pendingOperations[opId];
+      updateBalanceUI();
+      alert("提现申请已提交，流水号：" + (j.withdrawId || "未返回"));
     }catch(e){
+      delete pendingOperations[opId];
+      updateBalanceUI();
       alert("提现请求失败");
       console.error(e);
     }
@@ -324,43 +264,56 @@ withdrawBtn.onclick = ()=>{
 
 /* ========== 设置（系统诊断） ========== */
 openSettingsBtn.onclick = async ()=>{
-  // 调用后端验证 initData（示例）
-  let content = `<div style="font-size:13px;color:var(--muted)">检测 Telegram 环境...</div>`;
-  showModal("设置 · 系统诊断", content);
-
+  showModal("设置 · 系统诊断", `<div style="font-size:13px;color:var(--muted)">正在检测...</div>`);
   try{
-    const res = await fetch((API_BASE || "") + "/api/verifyInitData", {method:"POST", credentials:"include"});
-    const j = await res.json();
-    const ok = res.ok;
-    const html = `
-      <div style="font-size:13px;color:${ok? '#7be495':'#ff7b7b'}">${ok? 'initData 验证通过':'initData 验证失败'}</div>
-      <div style="margin-top:8px;font-size:13px;color:var(--muted)"><strong>结果：</strong><pre style="white-space:pre-wrap">${JSON.stringify(j, null, 2)}</pre></div>
-      <div style="text-align:right;margin-top:8px"><button id="close-ok" class="btn btn-ghost">关闭</button></div>
-    `;
-    modalBody.innerHTML = html;
+    const res = await fetch((API_BASE || "") + "/api/verifyInitData", { method:"POST", credentials:"include" });
+    const j = await res.json().catch(()=>({}));
+    if(!res.ok){
+      modalBody.innerHTML = <div style="font-size:13px;color:#ff7b7b">initData 验证失败：${j.message || res.status}</div>;
+      return;
+    }
+    modalBody.innerHTML = `<div style="font-size:13px;color:#7be495">initData 校验通过</div>
+      <div style="margin-top:8px;font-size:13px;color:var(--muted)"><pre style="white-space:pre-wrap">${JSON.stringify(j, null, 2)}</pre></div>
+      <div style="text-align:right;margin-top:8px"><button id="close-ok" class="btn btn-ghost">关闭</button></div>`;
     document.getElementById("close-ok").onclick = hideModal;
   }catch(e){
-    modalBody.innerHTML = `<div style="font-size:13px;color:#ff7b7b">检测失败</div>`;
+    modalBody.innerHTML = <div style="font-size:13px;color:#ff7b7b">检测失败</div>;
     console.error(e);
   }
 };
 
-/* ========== Telegram WebApp 初始化检测 ========== */
+/* ========== 绑定分类点击（筛选） ========== */
+document.getElementById("categories").addEventListener("click", (e)=>{
+  const card = e.target.closest(".cat");
+  if(!card) return;
+  const cat = card.getAttribute("data-cat");
+  if(!cat) return;
+  if(cat === 'hot') renderGames('all');
+  else if(cat === 'slots') renderGames('老虎机');
+  else if(cat === 'mahjong') renderGames('棋牌');
+  else if(cat === 'live') renderGames('真人');
+  else if(cat === 'lottery') renderGames('彩票');
+  else if(cat === 'sports') renderGames('体育');
+});
+
+/* ========== Telegram WebApp 与自动刷新 ========== */
 if(window.Telegram && Telegram.WebApp){
   Telegram.WebApp.ready();
-  document.getElementById("tg-status").textContent = "Telegram: 已就绪";
-  // 可读取 initData 并同步到后端（示例）
   try{
     const initData = Telegram.WebApp.initData || null;
-    if(initData){
-      // 真实场景：把 initData 发送到后端 /api/verifyInitData 做签名校验
-      // fetch("/api/verifyInitData", {method:"POST", body: initData})
-    }
+    // 如果你想要把 initData 发送到后端作为登录态校验，可在这里做
+    // fetch((API_BASE||"") + "/api/verifyInitData", {method:"POST", body: JSON.stringify({initData}), headers:{"Content-Type":"application/json"}});
   }catch(e){}
+  document.getElementById("tg-status") && (document.getElementById("tg-status").textContent = "Telegram: 已就绪");
 }
 
-/* ========== 定期刷新余额 ========== */
-setInterval(fetchBalance, 15_000); // 每15秒刷新一次（你可改）
+/* ========== 定期刷新余额 & 首次加载 ========== */
+fetchBalance();
+setInterval(fetchBalance, 20000); // 每20秒刷新一次
+
+/* ========== 手动进入钱包页（示例） ========== */
+navWallet && navWallet.addEventListener("click", ()=> {
+  // 你可以跳转到钱包页面或弹窗展示更详细的流水
+  showModal("钱包明细", `<div style="font-size:13px;color:var(--muted)">余额：${balanceEl.textContent}<br/>（示例）</div>`);
+});
 </script>
-</body>
-</html>
