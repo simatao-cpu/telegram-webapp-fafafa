@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>pg-game</title>
+
+<style>
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:#061122;color:#fff;
+    font-family:"PingFang SC",Arial;
+    display:flex;justify-content:center;
+  }
+  .app{max-width:420px;width:100%;padding:16px;}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .reels{
+    display:flex;gap:8px;height:160px;
+    background:linear-gradient(#072238,#041226);
+    padding:12px;border-radius:10px;
+    align-items:center;justify-content:center;
+  }
+  .reel{
+    flex:1;background:#0e2436;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:34px;
+  }
+  .controls{
+    display:flex;justify-content:space-between;align-items:center;margin-top:12px;
+  }
+  .bets button,.actions button{
+    padding:8px 12px;border-radius:8px;border:none;
+    cursor:pointer;background:rgba(255,255,255,0.06);color:#cfe8ff;
+  }
+  .log{
+    margin-top:12px;background:rgba(255,255,255,0.02);
+    padding:8px;border-radius:8px;color:#9fb0c8;font-size:13px;white-space:pre-line;
+  }
+</style>
+</head>
+
+<body>
+<div class="app">
+  <header>
+    <h2>PG Game</h2>
+    <div>余额：<span id="balance">1000</span></div>
+  </header>
+
+  <div class="reels">
+    <div class="reel" id="r0">—</div>
+    <div class="reel" id="r1">—</div>
+    <div class="reel" id="r2">—</div>
+  </div>
+
+  <div class="controls">
+    <div class="bets">
+      <button class="bet" data-bet="10">10</button>
+      <button class="bet" data-bet="50">50</button>
+      <button class="bet" data-bet="100">100</button>
+    </div>
+    <div class="actions">
+      <button id="spin">SPIN</button>
+      <button id="auto">AUTO(10)</button>
+    </div>
+  </div>
+
+  <div id="log" class="log"></div>
+</div>
+
+<script>
+/* -------------------------------------
+   pg-game 核心逻辑（封装版）
+   可直接替换为后端 API：
+   替换 spinByBackend(bet) 即可
+-------------------------------------*/
+
+const SYMBOLS = [
+  { id:1, label:"🍒", weight:20 },
+  { id:2, label:"🔔", weight:15 },
+  { id:3, label:"🍋", weight:18 },
+  { id:4, label:"⭐", weight:12 },
+  { id:5, label:"💎", weight:8 },
+  { id:6, label:"👑", weight:5 },
+  { id:7, label:"7️⃣", weight:4 },
+];
+
+const MULT = {1:5,2:6,3:5,4:8,5:12,6:25,7:50};
+
+function weightedPick(){
+  const pool=[];
+  SYMBOLS.forEach(s=>{for(let i=0;i<s.weight;i++) pool.push(s)});
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+/* 本地模拟器：可替换成真实后端请求 */
+function spinByBackend(bet){
+  const c1 = weightedPick();
+  const c2 = weightedPick();
+  const c3 = weightedPick();
+
+  let multiplier = 0;
+  if(c1.id===c2.id && c2.id===c3.id) multiplier = MULT[c1.id] || 5;
+
+  return {
+    result:[c1,c2,c3],
+    multiplier,
+    win: bet * multiplier
+  };
+}
+
+/* -------------------------------------
+   前端运行逻辑
+-------------------------------------*/
+
+const balanceEl = document.getElementById('balance');
+const logEl = document.getElementById('log');
+
+let balance = Number(balanceEl.textContent);
+let bet = 10;
+let autoMode = false;
+let autoCount = 0;
+
+document.querySelectorAll('.bet').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('.bet').forEach(b=>b.style.outline='none');
+    btn.style.outline="2px solid rgba(245,182,66,0.5)";
+    bet = Number(btn.dataset.bet);
+  };
+});
+
+document.getElementById('spin').onclick = spinOnce;
+
+document.getElementById('auto').onclick = ()=>{
+  if(autoMode){
+    autoMode=false;
+    autoCount=0;
+    document.getElementById('auto').textContent='AUTO(10)';
+    return;
+  }
+  autoMode=true;
+  autoCount=10;
+  document.getElementById('auto').textContent='STOP';
+  spinOnce();
+};
+
+function log(msg){
+  logEl.textContent = `${new Date().toLocaleTimeString()} — ${msg}\n` + logEl.textContent;
+}
+
+function updateReels(arr){
+  for(let i=0;i<3;i++){
+    document.getElementById('r'+i).textContent = arr[i].label;
+  }
+}
+
+function spinOnce(){
+  if(balance < bet){
+    alert("余额不足（演示）");
+    return;
+  }
+
+  balance -= bet;
+  balanceEl.textContent = balance;
+
+  // 调用模拟后端（可替换）
+  const resp = spinByBackend(bet);
+
+  updateReels(resp.result);
+
+  if(resp.win>0){
+    balance += resp.win;
+    log(`中奖 +${resp.win}（x${resp.multiplier}）`);
+  }else{
+    log(`未中奖`);
+  }
+
+  balanceEl.textContent = balance;
+
+  if(autoMode){
+    autoCount--;
+    if(autoCount>0){
+      setTimeout(spinOnce, 350);
+    } else {
+      autoMode=false;
+      document.getElementById('auto').textContent='AUTO(10)';
+    }
+  }
+}
+</script>
+
+</body>
+</html>
