@@ -2,287 +2,178 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>发发发 CRM — 钱包</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>发发发娱乐 - 游戏大厅</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 <style>
-  :root{--bg:#0f1720;--card:#0b1220;--muted:#9aa3b2;--accent:#1e90ff;--danger:#e05353;--glass: rgba(255,255,255,0.03)}
-  html,body{height:100%;margin:0;font-family:Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial;}
-  body{background:linear-gradient(180deg,#071025 0%, #071827 100%);color:#e6eef8;display:flex;align-items:flex-start;justify-content:center;padding:20px;}
-  .wrap{width:100%;max-width:920px}
-  header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-  header img{width:44px;height:44px;border-radius:10px}
-  h1{font-size:18px;margin:0}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(3,6,14,0.6);margin-bottom:12px}
-  .row{display:flex;gap:10px;align-items:center}
-  .balance{font-size:28px;font-weight:700}
-  .muted{color:var(--muted);font-size:13px}
-  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-  input[type="number"]{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;color:inherit;outline:none;width:150px}
-  button{background:var(--accent);border:none;padding:10px 14px;border-radius:10px;color:#fff;font-weight:600;cursor:pointer}
-  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
-  button.danger{background:var(--danger)}
-  .small{font-size:13px;padding:8px 12px;border-radius:8px}
-  .log{max-height:220px;overflow:auto;margin-top:12px;border-radius:10px;padding:10px;background:var(--glass);font-size:13px}
-  .log-item{padding:8px;border-bottom:1px dashed rgba(255,255,255,0.03);}
-  .center{display:flex;align-items:center;justify-content:center}
-  footer{margin-top:18px; color:var(--muted);font-size:13px}
-  @media(max-width:420px){
-    .controls{flex-direction:column}
-    input[type="number"]{width:100%}
-  }
+/* —— 红金游戏大厅主题 —— */
+:root{
+  --bg:#071019;
+  --card:#0b1220;
+  --accent:#d48806;
+  --accent-dark:#b36f00;
+  --muted:#9aa3ad;
+}
+html,body{margin:0;padding:0;background:var(--bg);color:#fff;font-family:Arial;}
+.wrap{max-width:780px;margin:auto;padding-bottom:80px;}
+
+/* 顶部栏 */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;background:rgba(255,255,255,0.04);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+header .left{display:flex;align-items:center;gap:10px;}
+header img{width:44px;height:44px;border-radius:10px;border:2px solid rgba(255,215,0,0.25);}
+header .title{font-size:18px;color:var(--accent);font-weight:bold;}
+header .sub{font-size:12px;color:var(--muted);}
+header .settings{font-size:20px;color:var(--muted);cursor:pointer;}
+
+/* 钱包条 */
+.wallet{
+  margin:14px 16px;padding:14px;border-radius:10px;
+  background:linear-gradient(90deg,rgba(204,32,0,0.06),rgba(255,200,0,0.05));
+  display:flex;align-items:center;justify-content:space-between;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.wallet .amount{font-size:22px;color:var(--accent);font-weight:bold;}
+.wallet .actions button{
+  margin-left:6px;padding:8px 12px;border-radius:8px;font-size:14px;
+  border:0;cursor:pointer;
+}
+.btn-accent{background:linear-gradient(90deg,var(--accent),var(--accent-dark));color:#120800;font-weight:bold;}
+.btn-grey{background:rgba(255,255,255,0.1);color:#fff;}
+
+/* Banner */
+.banner{margin:10px 16px;height:160px;border-radius:12px;overflow:hidden;position:relative;}
+.banner img{width:100%;height:100%;object-fit:cover;}
+.banner .text{position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.5));
+  padding:10px;font-size:16px;font-weight:bold;}
+
+/* 分类 */
+.categories{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:12px;
+  padding:10px 16px;
+}
+.cat{
+  background:rgba(255,255,255,0.05);border-radius:10px;
+  text-align:center;padding:10px;font-size:12px;color:var(--muted);
+}
+.cat span{font-size:22px;display:block;margin-bottom:6px;}
+
+/* 游戏区 */
+.section-title{display:flex;justify-content:space-between;margin:10px 16px;}
+.section-title h3{margin:0;font-size:16px;color:var(--accent);}
+.section-title button{background:transparent;border:0;color:var(--muted);font-size:14px;}
+
+.games{
+  padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+.game{
+  background:rgba(255,255,255,0.05);
+  border-radius:12px;overflow:hidden;position:relative;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.game img{width:100%;height:110px;object-fit:cover;}
+.game .info{padding:8px;font-size:14px;font-weight:bold;}
+.play{
+  position:absolute;right:10px;bottom:10px;
+  padding:6px 10px;border-radius:8px;background:var(--accent);
+  color:#120800;font-weight:bold;border:0;font-size:12px;
+}
+
+/* 底部导航 */
+.nav{
+  position:fixed;left:0;right:0;bottom:0;height:60px;
+  background:rgba(0,0,0,0.3);display:flex;justify-content:space-around;
+  align-items:center;border-top:1px solid rgba(255,255,255,0.1);
+}
+.nav button{background:transparent;border:0;color:var(--muted);font-size:13px;}
+.nav .active{color:var(--accent);font-weight:bold;}
 </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <img src="/IMG_1683.png" alt="logo">
-      <div>
-        <h1>发发发 CRM — 钱包系统</h1>
-        <div class="muted" id="user-info">尚未登录</div>
-      </div>
-    </header>
+<div class="wrap">
 
-    <div class="card">
-      <div class="row">
-        <div>
-          <div class="muted">当前余额</div>
-          <div class="balance" id="balance">--</div>
-        </div>
-        <div style="margin-left:auto;text-align:right">
-          <div class="muted">环境</div>
-          <div class="muted" id="env-info">Vercel</div>
-        </div>
-      </div>
-
-      <div class="controls">
-        <div style="display:flex;gap:8px;align-items:center">
-          <input id="depositAmt" type="number" placeholder="充值金额" min="0.01" step="0.01"/>
-          <button id="btnDeposit">充值（示例）</button>
-        </div>
-
-        <div style="display:flex;gap:8px;align-items:center">
-          <input id="withdrawAmt" type="number" placeholder="提现金额" min="0.01" step="0.01"/>
-          <button id="btnWithdraw" class="ghost">申请提现</button>
-        </div>
-
-        <div style="margin-left:auto">
-          <button id="btnRefresh" class="small ghost">刷新余额</button>
-          <button id="btnLogout" class="small danger">退出登录</button>
-        </div>
-      </div>
-
-      <div class="muted" style="margin-top:10px">交易流水（仅做演示，真实需后端持久化）</div>
-      <div class="log" id="log"></div>
+<!-- 顶部 -->
+<header>
+  <div class="left">
+    <img src="https://via.placeholder.com/44x44/ffcc00/8b0000?text=发">
+    <div>
+      <div class="title">发发发娱乐</div>
+      <div class="sub">欢迎回来 · VIP</div>
     </div>
-
-    <div class="card center">
-      <button id="btnOpenMini" class="ghost">在 Telegram 中打开小程序</button>
-      <button id="btnInit" style="margin-left:8px">手动读取 initData 验证登录</button>
-    </div>
-
-    <footer class="center muted">部署到 Vercel 后：在 BotFather 添加菜单/Direct Link 指向此页面即可</footer>
   </div>
+  <div class="settings">⚙️</div>
+</header>
+
+<!-- 钱包 -->
+<div class="wallet">
+  <div>
+    <div style="font-size:12px;color:var(--muted)">余额</div>
+    <div class="amount" id="balance">¥0.00</div>
+  </div>
+  <div class="actions">
+    <button class="btn-accent">充值</button>
+    <button class="btn-grey">提现</button>
+  </div>
+</div>
+
+<!-- Banner -->
+<div class="banner">
+  <img src="https://via.placeholder.com/720x320/cc0000/fff?text=首充+翻倍">
+  <div class="text">首充翻倍 · 日常返水</div>
+</div>
+
+<!-- 分类 -->
+<div class="categories">
+  <div class="cat"><span>🔥</span>热门</div>
+  <div class="cat"><span>🎰</span>老虎机</div>
+  <div class="cat"><span>🀄</span>麻将</div>
+  <div class="cat"><span>🎥</span>真人</div>
+  <div class="cat"><span>🎟️</span>彩票</div>
+  <div class="cat"><span>⚽</span>体育</div>
+</div>
+
+<!-- 游戏区 -->
+<div class="section-title">
+  <h3>热门推荐</h3>
+  <button>更多</button>
+</div>
+
+<div class="games">
+  <div class="game">
+    <img src="https://via.placeholder.com/360x200/880000/ffd700?text=Gates+of+Olympus">
+    <div class="info">Gates of Olympus</div>
+    <button class="play">进入</button>
+  </div>
+  <div class="game">
+    <img src="https://via.placeholder.com/360x200/aa2200/fff?text=麻将胡了">
+    <div class="info">麻将胡了 H5</div>
+    <button class="play">进入</button>
+  </div>
+</div>
+
+</div>
+
+<!-- 底部导航 -->
+<div class="nav">
+  <button class="active">首页</button>
+  <button>游戏</button>
+  <button>任务</button>
+  <button>钱包</button>
+  <button>我的</button>
+</div>
 
 <script>
-(async function(){
-  // Base URLs (同域下直接使用相对路径)
-  const API = {
-    verify: '/api/verify.js',   // POST { initData }
-    wallet: '/api/wallet.js',   // GET ?userId=telegram_id
-    deposit: '/api/deposit.js', // POST { userId, amount }
-    withdraw: '/api/withdraw.js'// POST { userId, amount }
-  };
-
-  // 小工具：显示日志
-  const logEl = document.getElementById('log');
-  function writeLog(text, tone='') {
-    const d = new Date().toLocaleString();
-    const div = document.createElement('div');
-    div.className = 'log-item';
-    div.innerHTML = `<div style="font-size:12px;color:var(--muted)">${d}</div><div>${text}</div>`;
-    logEl.prepend(div);
-    // also save to localStorage for demo
-    const hist = JSON.parse(localStorage.getItem('tx_hist')||'[]');
-    hist.unshift({ t:d, text });
-    localStorage.setItem('tx_hist', JSON.stringify(hist.slice(0,200)));
-  }
-  // load local history
-  (function loadHist(){
-    const hist = JSON.parse(localStorage.getItem('tx_hist')||'[]');
-    hist.forEach(h=>{ const div=document.createElement('div'); div.className='log-item'; div.innerHTML=`<div style="font-size:12px;color:var(--muted)">${h.t}</div><div>${h.text}</div>`; logEl.append(div); });
-  })();
-
-  // UI elements
-  const balanceEl = document.getElementById('balance');
-  const userInfoEl = document.getElementById('user-info');
-  const btnDeposit = document.getElementById('btnDeposit');
-  const btnWithdraw = document.getElementById('btnWithdraw');
-  const btnRefresh = document.getElementById('btnRefresh');
-  const btnLogout = document.getElementById('btnLogout');
-  const btnInit = document.getElementById('btnInit');
-  const btnOpenMini = document.getElementById('btnOpenMini');
-
-  // current user (telegram id)
-  let user = { telegram_id: null, id:null, username:null };
-
-  // Telegram WebApp API (if within Telegram)
-  const tg = window.Telegram?.WebApp || null;
-  if (tg) {
-    // Bot can open this webapp with initData. We can read tg.initData too.
-    document.getElementById('env-info').textContent = 'Telegram WebApp';
-    // auto attempt to verify if initData present
-    tryAutoLogin();
-  } else {
-    // not inside Telegram
-    document.getElementById('env-info').textContent = 'Browser';
-    userInfoEl.textContent = '在浏览器：请点击【手动读取 initData】在 Telegram 中测试';
-  }
-
-  // try auto-login using tg.initData
-  async function tryAutoLogin(){
-    if (!tg) return;
-    const initData = tg.initData || tg.initDataUnsafe?.raw;
-    if (!initData) {
-      userInfoEl.textContent = '未检测到 initData';
-      return;
-    }
-    // call backend verify
-    try {
-      const r = await fetch(API.verify, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ initData }) });
-      const j = await r.json();
-      if (!j.ok) { userInfoEl.textContent = '验证失败'; writeLog('initData 验证失败: '+(j.error||JSON.stringify(j))); return; }
-      // backend returns minimal user info? our simple backend uses telegram id stored in initData on server...
-      // We'll extract telegram_id from tg.initDataUnsafe if available
-      const tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
-      if (tgUser && tgUser.id) {
-        user.telegram_id = tgUser.id;
-        user.username = tgUser.username || (tgUser.first_name||'');
-        userInfoEl.textContent = `登录：@${user.username || user.telegram_id}`;
-        writeLog('登录成功：' + (user.username||user.telegram_id));
-        await refreshBalance();
-      } else {
-        userInfoEl.textContent = '登录成功（无法读取用户信息）';
-      }
-    } catch (e) {
-      userInfoEl.textContent = '验证过程出错';
-      writeLog('verify error: ' + e.message);
-    }
-  }
-
-  // manual init button (if user pasted initData or inside tg)
-  btnInit.onclick = async () => {
-    if (tg && tg.initData) {
-      // reuse auto flow
-      tryAutoLogin();
-      return;
-    }
-    // ask user to paste initData (not ideal on mobile but OK)
-    const initData = prompt('请把 Telegram 给你的 initData 粘贴到这里（或在 Telegram 内打开 WebApp）');
-    if (!initData) return;
-    try {
-      const r = await fetch(API.verify, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ initData }) });
-      const j = await r.json();
-      if (!j.ok) { alert('验证失败: '+(j.error||JSON.stringify(j))); return; }
-      alert('验证成功（演示）');
-    } catch (e) { alert('验证失败: '+e.message); }
-  };
-
-  // fetch balance
-  async function refreshBalance(){
-    if (!user.telegram_id) {
-      writeLog('请先登录（initData）');
-      return;
-    }
-    try {
-      const q = new URLSearchParams({ userId: user.telegram_id }).toString();
-      const r = await fetch(API.wallet + '?' + q);
-      const j = await r.json();
-      if (r.ok) {
-        balanceEl.textContent = Number(j.balance).toFixed(2);
-        writeLog('刷新余额：' + Number(j.balance).toFixed(2));
-      } else {
-        writeLog('余额查询失败：' + (j.error||JSON.stringify(j)));
-        alert('余额查询失败');
-      }
-    } catch (e) {
-      writeLog('余额请求出错：'+e.message);
-      alert('余额请求出错：' + e.message);
-    }
-  }
-
-  // deposit
-  btnDeposit.onclick = async () => {
-    if (!user.telegram_id) { alert('请先在 Telegram 中打开并登录'); return; }
-    const amt = Number(document.getElementById('depositAmt').value || 0);
-    if (!amt || amt <= 0) { alert('请输入正确的充值金额'); return; }
-
-    // simple direct call to deposit API (demo). In production应该走支付网关。
-    try {
-      const r = await fetch(API.deposit, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ userId: user.telegram_id, amount: amt })});
-      const j = await r.json();
-      if (r.ok) {
-        writeLog(`充值 ${amt} 成功，余额 ${Number(j.balance).toFixed(2)}`);
-        await refreshBalance();
-      } else {
-        writeLog('充值失败：' + (j.error||JSON.stringify(j)));
-        alert('充值失败: ' + (j.error || 'unknown'));
-      }
-    } catch (e) {
-      writeLog('充值异常：' + e.message);
-      alert('充值异常: ' + e.message);
-    }
-  };
-
-  // withdraw
-  btnWithdraw.onclick = async () => {
-    if (!user.telegram_id) { alert('请先在 Telegram 中打开并登录'); return; }
-    const amt = Number(document.getElementById('withdrawAmt').value || 0);
-    if (!amt || amt <= 0) { alert('请输入正确的提现金额'); return; }
-    if (!confirm(`确认申请提现 ${amt} 吗？（演示：会直接从余额扣除）`)) return;
-
-    try {
-      const r = await fetch(API.withdraw, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ userId: user.telegram_id, amount: amt })});
-      const j = await r.json();
-      if (r.ok) {
-        writeLog(`提现 ${amt} 已申请，余额 ${Number(j.balance).toFixed(2)}`);
-        await refreshBalance();
-      } else {
-        writeLog('提现失败：' + (j.error||JSON.stringify(j)));
-        alert('提现失败: ' + (j.error || 'unknown'));
-      }
-    } catch (e) {
-      writeLog('提现异常：' + e.message);
-      alert('提现异常: ' + e.message);
-    }
-  };
-
-  btnRefresh.onclick = refreshBalance;
-  btnLogout.onclick = () => {
-    user = { telegram_id: null, id:null, username: null };
-    userInfoEl.textContent = '已退出';
-    balanceEl.textContent = '--';
-    writeLog('已退出登录');
-  };
-
-  // open in Telegram (if available)
-  btnOpenMini.onclick = () => {
-    if (!tg) return alert('请在 Telegram 应用中打开此页面以使用小程序功能');
-    tg.openTelegram();
-  };
-
-  // auto if inside telegram: set user from initDataUnsafe
-  if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-    const u = tg.initDataUnsafe.user;
-    user.telegram_id = u.id;
-    user.username = u.username || (u.first_name || '');
-    userInfoEl.textContent = `@${user.username || user.telegram_id}`;
-  }
-
-  // If user already known, auto refresh
-  if (user.telegram_id) await refreshBalance();
-
-})();
+// —— Telegram WebApp InitData 示例 —— //
+if (window.Telegram && Telegram.WebApp) {
+  Telegram.WebApp.ready();
+}
 </script>
+
 </body>
 </html>
