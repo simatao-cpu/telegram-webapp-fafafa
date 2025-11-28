@@ -1,1 +1,5 @@
-{}
+{
+  "users": [
+    { "id":"u1","name":"demo","balance":1000 }
+  ]
+}
