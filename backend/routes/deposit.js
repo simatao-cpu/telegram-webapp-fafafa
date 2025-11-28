@@ -1,20 +1,19 @@
-import fs from "fs";
-import path from "path";
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ ok: false, message: "Only POST supported" });
+  }
 
-export default function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
+  const { amount } = req.body;
 
-  const { userId, amount } = req.body;
-  if (!userId || !amount) return res.status(400).json({ error: "Missing userId or amount" });
+  if (!amount || amount <= 0) {
+    return res.status(400).json({ ok: false, message: "Invalid amount" });
+  }
 
-  const dbPath = path.join(process.cwd(), "database", "users.json");
-  const data = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
+  const orderId = "re_" + Math.random().toString(36).slice(2);
 
-  if (!data[userId]) data[userId] = { balance: 0 };
-
-  data[userId].balance += amount;
-
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-
-  res.status(200).json({ success: true, balance: data[userId].balance });
+  return res.status(200).json({
+    ok: true,
+    orderId,
+    message: "充值订单创建成功（示例）"
+  });
 }
